@@ -10,7 +10,7 @@
 0x000A // 6 READ NIBBLE
 0x0008 // 7 READ WORD
 0x0017 // 8 PRINT NIBBLE
-0x0005 // 9 MAIN
+0x0008 // 9 MAIN
 0x0000
 0x0000
 0x0000
@@ -170,11 +170,14 @@
   // PRINT NIBBLE
   // - Input: R0
   // - Modifies: R1
-  LD R1 3      | 0x2203
-  ADD R0 R0 R1 | 0x1001
-  TRAP OUT     | 0xF021
-  RETURN       | 0xC9C0
-  0x30         | 0x0030
+  ADD R0 R0 0x10110 | 0x1036 // R0 -= 10
+  BR < 1            | 0x0801 // if { A..F }
+  ADD R0 R0 0x7     | 0x1027 //  R0 += 0x7
+  LD R1 0x3         | 0x2203 // R1 = 3A
+  ADD R0 R0 R1      | 0x1001 // R0 += R1
+  TRAP OUT          | 0xF021
+  RETURN            | 0xC9C0
+  0x3A              | 0x003A
 
   // MAIN
   LDR R4 R6 0x7 | 0x6987 // read word
