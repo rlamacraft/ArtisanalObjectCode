@@ -9,8 +9,8 @@
 0x0005 // 5 LEFT BITSHIFT
 0x000A // 6 READ NIBBLE
 0x0008 // 7 READ WORD
-0x0017 // 8 MAIN
-0x0000
+0x0017 // 8 PRINT NIBBLE
+0x0005 // 9 MAIN
 0x0000
 0x0000
 0x0000
@@ -167,6 +167,15 @@
   'x'           | 0x0078
   \00           | 0x0000
 
+  // PRINT NIBBLE
+  // - Input: R0
+  // - Modifies: R1
+  LD R1 3      | 0x2203
+  ADD R0 R0 R1 | 0x1001
+  TRAP OUT     | 0xF021
+  RETURN       | 0xC9C0
+  0x30         | 0x0030
+
   // MAIN
   LDR R4 R6 0x7 | 0x6987 // read word
   JSRR R4       | 0x4100
@@ -179,9 +188,9 @@
   AND R5 R0 R0  | 0x5A00 // print overflow
   LDR R4 R6 0x0 | 0x6980
   JSRR R4       | 0x4100
-  LD R0 7       | 0x2007
-  ADD R0 R0 R2  | 0x1002
-  TRAP OUT      | 0xF021
+  AND R0 R2 R2  | 0x5082
+  LDR R4 R6 0x8 | 0x6988
+  JSRR R4       | 0x4100
   AND R0 R5 R5  | 0x5145
 
   ADD R1 R1 0x4 | 0x1264 // bit shift left 4 more times
@@ -189,5 +198,3 @@
   JSRR R4       | 0x4100
 
   TRAP HALT     | 0xF025
-
-  0x30          | 0x0030
