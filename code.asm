@@ -7,7 +7,7 @@
 0x0010 // 3 ECHO
 0x0004 // 4 BITWISE OR
 0x0005 // 5 LEFT BITSHIFT
-0x0009 // 6 READ NIBBLE
+0x000A // 6 READ NIBBLE
 0x0008 // 7 READ WORD
 0x0017 // 8 MAIN
 0x0000
@@ -102,15 +102,17 @@
   // -- R1: The number of times; > 0
   // - Outputs
   // -- R0: R0 << R1
+  // -- R1: 0x0
   // -- R2: R2 << R1 | overflow(R0 << R1)
-  ADD R2 R2 R2      | 0x1482
-  ADD R0 R0 R0      | 0x1000
-  BR >= 3           | 0x0603
-  NOT R2 R2         | 0x94BF
+  ADD R2 R2 R2      | 0x1482 // R2 = 2 * R2
+  AND R0 R0 R0      | 0x5000 // no-op but sets status register
+  BR >= 3           | 0x0603 // if R0 < 0
+  NOT R2 R2         | 0x94BF //   R2 = R2 | 0x00001
   AND R2 R2 0x11110 | 0x54BE
   NOT R2 R2         | 0x94BF
-  ADD R1 R1 -1      | 0x127F
-  BR > -8           | 0x03F8
+  ADD R0 R0 R0      | 0x1000 // R0 = 2 * R0
+  ADD R1 R1 -1      | 0x127F // R1--
+  BR > -9           | 0x03F7 // if R1 > 0, repeat
   RETURN            | 0xC9C0
 
   // READ NIBBLE
@@ -169,12 +171,13 @@
   LDR R4 R6 0x7 | 0x6987
   JSRR R4       | 0x4100
 
-  	AND R2 R2 0x0     | 0x54A0
+	AND R2 R2 0x0 | 0x54A0
   AND R1 R1 0x4 | 0x5264
   LDR R4 R6 0x5 | 0x6985
   JSRR R4       | 0x4100
   //AND R1 R1 0x4 | 0x5264 // this assignment doesn't work because R1 == 0
-  ADD R1 R1 0x4 | 0x1264
-  JSRR R4       | 0x4100
+
+  //ADD R1 R1 0x4 | 0x1264
+  //JSRR R4       | 0x4100
 
   TRAP HALT     | 0xF025
