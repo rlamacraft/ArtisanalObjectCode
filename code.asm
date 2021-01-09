@@ -168,16 +168,26 @@
   \00           | 0x0000
 
   // MAIN
-  LDR R4 R6 0x7 | 0x6987
+  LDR R4 R6 0x7 | 0x6987 // read word
   JSRR R4       | 0x4100
 
-	AND R2 R2 0x0 | 0x54A0
+	AND R2 R2 0x0 | 0x54A0 // bit shift left 4
   AND R1 R1 0x4 | 0x5264
   LDR R4 R6 0x5 | 0x6985
   JSRR R4       | 0x4100
-  //AND R1 R1 0x4 | 0x5264 // this assignment doesn't work because R1 == 0
 
-  //ADD R1 R1 0x4 | 0x1264
-  //JSRR R4       | 0x4100
+  AND R5 R0 R0  | 0x5A00 // print overflow
+  LDR R4 R6 0x0 | 0x6980
+  JSRR R4       | 0x4100
+  LD R0 7       | 0x2007
+  ADD R0 R0 R2  | 0x1002
+  TRAP OUT      | 0xF021
+  AND R0 R5 R5  | 0x5145
+
+  ADD R1 R1 0x4 | 0x1264 // bit shift left 4 more times
+  LDR R4 R6 0x5 | 0x6985
+  JSRR R4       | 0x4100
 
   TRAP HALT     | 0xF025
+
+  0x30          | 0x0030
