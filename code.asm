@@ -10,8 +10,8 @@
 0x000A // 6 READ NIBBLE
 0x0008 // 7 READ WORD
 0x0017 // 8 PRINT NIBBLE
-0x0008 // 9 MAIN
-0x0000
+0x0008 // 9 PRINT WORD
+0x0013 // A MAIN
 0x0000
 0x0000
 0x0000
@@ -179,25 +179,45 @@
   RETURN            | 0xC9C0
   0x3A              | 0x003A
 
+  // PRINT WORD
+  // - Modifies: R0 R1 R2 R3 R4 R5
+  // 1. Setup Loop, clear R2
+  AND R5 R5 0x0 | 0x5B60
+  ADD R5 R5 0x4 | 0x1B64  // i = 4
+  LEA R3 0x0    | 0xE600
+  AND R2 R2 0x0 | 0x54A0  // clear R2 between printing
+
+  // 2. Shift Left
+  AND R1 R1 0x0 | 0x5260
+  ADD R1 R1 0x4 | 0x1264 // R1 = 0x4
+  LDR R4 R6 0x5 | 0x6985 // BIT BITSHIFT
+  JSRR R4       | 0x4100
+
+  // 3. Print
+  ADD R7 R7 0x1  | 0x1FE1
+  STR R0 R7 0x0  | 0x71C0 // Push R0 on the stack
+  AND R0 R2 R2   | 0x5082 // R0 = R2
+  LDR R4 R6 0x8  | 0x6988
+  JSRR R4        | 0x4100 // PRINT NIBBLE
+  ADD R7 R7 0x1F | 0x1FFF // Pop R0 off stack
+  LDR R0 R7 0x0  | 0x61C0
+
+  // 4. Repeat
+  ADD R5 R5 0x1F | 0x1B7F // i--
+  BR = 0x1       | 0x0401
+  JMP R3         | 0xC0C0
+  RETURN         | 0xC9C0
+
   // MAIN
   LDR R4 R6 0x7 | 0x6987 // read word
   JSRR R4       | 0x4100
 
-	AND R2 R2 0x0 | 0x54A0 // bit shift left 4
-  AND R1 R1 0x4 | 0x5264
-  LDR R4 R6 0x5 | 0x6985
-  JSRR R4       | 0x4100
-
-  AND R5 R0 R0  | 0x5A00 // print overflow
+  AND R5 R0 R0  | 0x5A00 // print newline
   LDR R4 R6 0x0 | 0x6980
-  JSRR R4       | 0x4100
-  AND R0 R2 R2  | 0x5082
-  LDR R4 R6 0x8 | 0x6988
   JSRR R4       | 0x4100
   AND R0 R5 R5  | 0x5145
 
-  ADD R1 R1 0x4 | 0x1264 // bit shift left 4 more times
-  LDR R4 R6 0x5 | 0x6985
+  LDR R4 R6 0x9 | 0x6989 // print word
   JSRR R4       | 0x4100
 
   TRAP HALT     | 0xF025
