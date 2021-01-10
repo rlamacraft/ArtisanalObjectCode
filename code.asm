@@ -199,8 +199,8 @@
   AND R0 R2 R2   | 0x5082 // R0 = R2
   LDR R4 R6 0x8  | 0x6988
   JSRR R4        | 0x4100 // PRINT NIBBLE
-  ADD R7 R7 0x1F | 0x1FFF // Pop R0 off stack
-  LDR R0 R7 0x0  | 0x61C0
+  LDR R0 R7 0x0  | 0x61C0	// Pop R0 off stack
+  ADD R7 R7 0x1F | 0x1FFF
 
   // 4. Repeat
   ADD R5 R5 0x1F | 0x1B7F // i--
@@ -212,11 +212,23 @@
   LDR R4 R6 0x7 | 0x6987 // read word
   JSRR R4       | 0x4100
 
-  AND R5 R0 R0  | 0x5A00 // print newline
-  LDR R4 R6 0x0 | 0x6980
-  JSRR R4       | 0x4100
-  AND R0 R5 R5  | 0x5145
+  ADD R7 R7 0x1 | 0x1FE1 // push on stack
+  STR R0 R7 0x0 | 0x71C0
 
+  LDR R4 R6 0x0 | 0x6980 // print newline
+  JSRR R4       | 0x4100
+
+  LDR R4 R6 0x7 | 0x6987 // read another word
+  JSRR R4       | 0x4100
+
+  LDR R1 R7 0x0  | 0x63C0 // pop from stack
+  ADD R7 R7 0x1F | 0x1FFF
+  ADD R3 R0 R1   | 0x1601	// add the two numbers together
+
+  LDR R4 R6 0x0 | 0x6980	// print newline
+  JSRR R4       | 0x4100
+
+  AND R0 R3 R3  | 0x50C3
   LDR R4 R6 0x9 | 0x6989 // print word
   JSRR R4       | 0x4100
 
