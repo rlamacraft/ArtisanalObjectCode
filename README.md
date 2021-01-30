@@ -2,7 +2,7 @@
 A simple virtual machine, and some hand-crafted object code
 
 ## What does it do?
-When run by the virtual machine, the object code reads a 16-bit hexadecimal number and shifts it 8 bits to the left
+When run by the virtual machine, the object code reads two 16-bit hexadecimal numbers and sums them
 
 ## Files
 
